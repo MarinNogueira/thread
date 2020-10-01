@@ -1,0 +1,10 @@
+br\com\uvv\lp\threads\gateways\operations\OperationsGatewayImpl.class
+br\com\uvv\lp\threads\usecases\TheSavingUseCase.class
+br\com\uvv\lp\threads\gateways\operations\OperationsGateway.class
+br\com\uvv\lp\threads\usecases\ThreadUseCaseOrquestrator.class
+br\com\uvv\lp\threads\gateways\controller\ThreadsController.class
+br\com\uvv\lp\threads\Main.class
+br\com\uvv\lp\threads\domains\Account.class
+br\com\uvv\lp\threads\domains\Operation.class
+br\com\uvv\lp\threads\usecases\TheSmartUseCase.class
+br\com\uvv\lp\threads\usecases\TheSpenderUseCase.class

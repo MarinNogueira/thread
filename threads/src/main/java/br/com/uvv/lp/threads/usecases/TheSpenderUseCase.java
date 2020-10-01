@@ -12,7 +12,7 @@ public class TheSpenderUseCase implements Runnable {
 	
 	private OperationsGatewayImpl operationsGateway = new OperationsGatewayImpl();
 	
-	private Lock lock = new ReentrantLock();
+	private Lock lock;
 
 	private Operation spender;
 	

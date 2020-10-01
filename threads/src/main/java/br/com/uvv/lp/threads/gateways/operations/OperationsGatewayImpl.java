@@ -6,19 +6,16 @@ import br.com.uvv.lp.threads.domains.Account;
 import br.com.uvv.lp.threads.domains.Operation;
 
 public class OperationsGatewayImpl {
-	
-	private Boolean hold = false;
-	
+
 	public void spend(final Operation spender, final Account account, final Lock lock) {
+		
 		try {
 			Thread.sleep(spender.getSleep());
-//			Thread.sleep(5000);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			e.printStackTrace();
 		}
-		
-			
+
 		lock.lock();
 		if(account.getBalance() != 0) {
 			if(account.getBalance() - spender.getPull() >= 0) {
@@ -30,10 +27,9 @@ public class OperationsGatewayImpl {
 			} 
 			lock.unlock();
 		}else {
-			System.out.println("Hello 0");
-
 			lock.unlock();
-			threadSync(spender);		
+			threadSync(spender, account);		
+
 		}
 	}
 
@@ -41,12 +37,11 @@ public class OperationsGatewayImpl {
 
 		try {
 			Thread.sleep(smart.getSleep());
-//			Thread.sleep((5000));
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			e.printStackTrace();
 		}
-		
+
 		lock.lock();
 		if(account.getBalance() != 0) {
 			if(account.getBalance() - smart.getPull() >= 0) {
@@ -58,23 +53,20 @@ public class OperationsGatewayImpl {
 			} 
 			lock.unlock();
 		}else {
-			System.out.println("Hello 1");
 			lock.unlock();
-			threadSync(smart);
+			threadSync(smart, account);
 		}
 	}
 
 	public void save(final Operation save, final Account account, final Lock lock) {
-		// TODO Auto-generated method stub
-		
+
 		try {
 			Thread.sleep(save.getSleep());
-//			Thread.sleep((5000));
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			e.printStackTrace();
 		}
-		
+
 		lock.lock();
 		if(account.getBalance() != 0){
 			if(account.getBalance() - save.getPull() >= 0) {
@@ -83,73 +75,67 @@ public class OperationsGatewayImpl {
 				save.setBalance(save.getBalance() + save.getPull());
 				System.out.println("Thread: " + Thread.currentThread().getName() + " - Accounts new Balance: " + account.getBalance());
 				System.out.println("Threads new Balance: " + save.getBalance() + "\n\n");
-			}
-			lock.unlock();				
-		} else {
-			System.out.println("Hello 2");
+			}		
 			lock.unlock();
-			threadSync(save);
+		} else {
+			lock.unlock();
+			threadSync(save, account);
 		}
-		
-		
-		
+
+
+
 	}
 
-	
-	public void sponsor(final Operation sponsor, final Account account, final Lock lock) {
-		
+
+	public synchronized void sponsor(final Operation sponsor, final Account account, final Lock lock) {
+
 		try {
 			Thread.sleep((15000));
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			e.printStackTrace();
 		}
-		
+
 		lock.lock();
 		try {
 			if(account.getBalance() == 0) {
-				synchronized (Thread.currentThread()) {
-					account.setBalance(account.getBalance() + sponsor.getPull());
-					sponsor.setNumberOfPulls(sponsor.getNumberOfPulls() + 1);
-					sponsor.setBalance(sponsor.getBalance() - sponsor.getPull());
-					System.out.println("Thread: " + Thread.currentThread().getName() + " - Accounts new Balance: " + account.getBalance());
-					System.out.println("Threads new Balance: " + sponsor.getBalance() + "\n\n");
-					threadSync(sponsor);
-				}
+				account.setBalance(account.getBalance() + sponsor.getPull());
+				sponsor.setNumberOfPulls(sponsor.getNumberOfPulls() + 1);
+				sponsor.setBalance(sponsor.getBalance() - sponsor.getPull());
+				System.out.println("\n\nThread: " + Thread.currentThread().getName() + " - Accounts new Balance: " + account.getBalance());
+				System.out.println("Threads new Balance: " + sponsor.getBalance() + "\n\n");
+				threadSync(sponsor, account);
 			}
-			
+
 		} finally {
 			lock.unlock();
 		}
 	}
 
-	private synchronized void threadSync(final Operation operation) {
-		synchronized (this) {
-			try {
-				if(Thread.currentThread().getName().equals("The Sponsor")) {
-					System.out.println("Cheguei aqui");
-					hold = false;
-					notify();
+	private void threadSync(final Operation operation, final Account account) {
+
+		synchronized (account) {
+
+			if(Thread.currentThread().getName().equals("The Sponsor")) {
+
+				account.notifyAll();
 				
-				} else {
-					System.out.println(Thread.currentThread().getName() + " Number of Pulls: " + operation.getNumberOfPulls());
-					System.out.println("Balance: " + operation.getBalance());
-					
-					hold = true;
-					
-					while (hold){
-						System.out.println("Hold: " + hold);
-						wait();						
-					}
-					
-					System.out.println("passou");
-					
+			} else {
+				System.out.println(Thread.currentThread().getName() + " Number of Pulls: " + operation.getNumberOfPulls());
+				System.out.println("Balance: " + operation.getBalance());
+				
+				try {
+					account.wait();
+
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+					e.printStackTrace();
 				}
-			} catch (Exception e) {
-				Thread.currentThread().interrupt();
-				e.printStackTrace();
-			}	
+				
+			}
 			
 		}
 	}
+
+
 }

@@ -6,7 +6,7 @@ import br.com.uvv.lp.threads.domains.Account;
 import br.com.uvv.lp.threads.domains.Operation;
 
 public class OperationsGatewayImpl {
-
+	
 	public void spend(final Operation spender, final Account account, final Lock lock) {
 		
 		try {

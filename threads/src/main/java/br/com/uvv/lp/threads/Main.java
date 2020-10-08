@@ -7,9 +7,9 @@ public class Main
 {    
 	public static void main( String[] args )
     {
-		//teste
+		//instancia um objeto threadsController
 		final ThreadsController threadsController = new ThreadsController();
-				
+		//chama o metodo startOperations do threadsController				
 		threadsController.startOperations();
 		
     }

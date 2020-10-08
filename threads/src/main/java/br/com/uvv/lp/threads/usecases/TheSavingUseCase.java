@@ -24,7 +24,7 @@ public class TheSavingUseCase implements Runnable {
 		this.lock = lock;
 	}
 
-	public void run() {
+	public void run() { //executa o metodo save do objeto OperationsGatewayImpl enquanto a Thread não está interrompida
 		while(!Thread.currentThread().isInterrupted()) {	
 			operationsGateway.save(this.save, this.account, this.lock);		
 		}
